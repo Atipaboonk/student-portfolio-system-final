@@ -3,51 +3,49 @@ import mongoose from "mongoose";
 
 const PortfolioSchema = new mongoose.Schema(
   {
-    // ===== Sprint 1 (เดิม) =====
-    owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    title: { type: String, required: true },
-    desc: { type: String },
-    fileUrl: { type: String },
+    // เจ้าของผลงาน
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      index: true,
+    },
 
+    // ===== ฟิลด์ตาม requirement ใหม่ =====
+    title: { type: String, required: true },            // Title
+    description: { type: String, default: "" },         // Description
+    yearOfProject: { type: Number, required: true },    // Year of project
+    category: { type: String, required: true },         // Category (เช่น AI, Web, UX)
+
+    // Attach files (images 1–10)
+    images: { type: [String], default: [] },            // เส้นทางไฟล์รูป
+    coverImageUrl: { type: String },                    // ใช้ images[0] เป็นค่าเริ่มต้นตอนสร้าง
+
+    // ===== เวิร์กโฟลว์ Sprint 2–4 =====
     visibility: {
       type: String,
       enum: ["public", "private"],
       default: "private",
+      index: true,
     },
-
-    status: {
-      type: String,
-      enum: ["submitted", "approved", "rejected"],
-      default: "submitted",
-    },
-
-    // ===== Sprint 2–4 (ต่อเติม, ไม่ทับของเดิม) =====
-    images: { type: [String], default: [] },           // ต้องมี ≥1 ก่อน submit
-    tags: { type: [String], default: [] },
-    award: { type: String },
-    awardYear: { type: Number },
-    workDate: { type: Date },
-    coverImageUrl: { type: String },
-
-    // สถานะเวอร์ชันใหม่ (ใช้จริงใน Sprint 2–4)
     statusV2: {
       type: String,
       enum: ["Draft", "Pending", "InProcess", "Approved", "Rejected"],
       default: "Draft",
+      index: true,
     },
-
-    reviewComment: { type: String },                    // Sprint 3: เหตุผลจาก Reviewer
+    reviewComment: { type: String },                    // เหตุผลจาก Reviewer
     reviewer: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    revision: { type: Number, default: 0 },             // นับรอบส่งใหม่
+    revision: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
 
-// ===== Indexes (ต้องอยู่หลังจากประกาศ Schema) =====
-PortfolioSchema.index({ visibility: 1, statusV2: 1, awardYear: 1, owner: 1 });
-PortfolioSchema.index({ title: "text", desc: "text", tags: "text", award: "text" });
+// ดัชนีที่ช่วยให้ค้นหาเร็วขึ้น (อย่าประกาศก่อนสร้าง schema)
+PortfolioSchema.index({ visibility: 1, statusV2: 1, yearOfProject: 1, category: 1, owner: 1 });
 
-export default mongoose.model("Portfolio", PortfolioSchema);
+const Portfolio = mongoose.model("Portfolio", PortfolioSchema);
+export default Portfolio;
 
 
 
