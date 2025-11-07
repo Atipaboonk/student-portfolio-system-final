@@ -1,10 +1,8 @@
-// src/middleware/auth.js
 import jwt from "jsonwebtoken";
 
 export function auth(req, res, next) {
   const authHeader = req.headers.authorization;
 
-  // ต้องมี header: Authorization: Bearer <token>
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ message: "No token, authorization denied" });
   }
@@ -20,7 +18,6 @@ export function auth(req, res, next) {
   }
 }
 
-// อนุญาตเฉพาะบาง role
 export function allowRoles(...roles) {
   return (req, res, next) => {
     if (!req.user || !req.user.role) {
@@ -35,24 +32,20 @@ export function allowRoles(...roles) {
   };
 }
 
-/* ✅ Sprint 4: authOptional — ให้คนทั่วไปเข้าหน้า public ได้
-   ถ้ามี token → decode
-   ถ้าไม่มี token → next() เลย */
+// สำหรับ route ที่ให้ guest เข้าได้ แต่ถ้ามี token ก็ decode
 export function authOptional(req, res, next) {
   const authHeader = req.headers.authorization || "";
 
   if (!authHeader.startsWith("Bearer ")) {
-    return next(); // ยังไม่ล็อกอินก็ไปต่อได้
+    return next();
   }
 
   try {
     const token = authHeader.split(" ")[1];
-    req.user = jwt.verify(token, process.env.JWT_SECRET); // decode token
+    req.user = jwt.verify(token, process.env.JWT_SECRET);
   } catch (err) {
-    // ถ้า token ผิด → ไม่ error แต่ treat as guest
+    // ถ้า token พัง treat เป็น guest เฉยๆ
   }
 
   next();
 }
-
-

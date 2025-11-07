@@ -1,21 +1,10 @@
-// src/models/User.js
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
-    displayName: {
-      type: String,
-      required: true,
-    },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    displayName: { type: String, required: true },
 
     role: {
       type: String,
@@ -38,7 +27,6 @@ const userSchema = new mongoose.Schema(
       default: "local",
     },
 
-    /* ✅ NEW fields for profile */
     bio: String,
     contactEmail: String,
     phone: String,
@@ -50,9 +38,10 @@ const userSchema = new mongoose.Schema(
       website: String,
     },
 
-    /* ✅ NEW fields for reset password */
     resetPasswordToken: String,
     resetPasswordExpires: Date,
+
+    avatar: String, // สำหรับ v2 ถ้าใช้
   },
   { timestamps: true }
 );

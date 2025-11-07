@@ -1,4 +1,3 @@
-// src/routes/auth.js
 import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -8,7 +7,7 @@ import { upload } from "../middleware/upload.js";
 
 const router = express.Router();
 
-/* ------------------- REGISTER ------------------- */
+/* REGISTER */
 router.post(
   "/register",
   upload.fields([
@@ -53,7 +52,7 @@ router.post(
   }
 );
 
-/* ------------------- LOGIN ------------------- */
+/* LOGIN */
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body || {};
@@ -76,7 +75,12 @@ router.post("/login", async (req, res) => {
     return res.json({
       message: "Login success",
       token,
-      user: { _id: user._id, email, displayName: user.displayName, role: user.role },
+      user: {
+        _id: user._id,
+        email: user.email,
+        displayName: user.displayName,
+        role: user.role,
+      },
     });
   } catch (err) {
     console.error(err);
@@ -84,12 +88,12 @@ router.post("/login", async (req, res) => {
   }
 });
 
-/* ------------------- LOGOUT ------------------- */
+/* LOGOUT */
 router.get("/logout", (req, res) => {
   return res.json({ message: "Logout successful — clear token on client." });
 });
 
-/* ------------------- FORGOT PASSWORD ------------------- */
+/* FORGOT PASSWORD */
 router.post("/forgot-password", async (req, res) => {
   try {
     const { email } = req.body || {};
@@ -98,7 +102,7 @@ router.post("/forgot-password", async (req, res) => {
 
     const resetToken = crypto.randomBytes(32).toString("hex");
     user.resetPasswordToken = resetToken;
-    user.resetPasswordExpires = Date.now() + 15 * 60 * 1000; // 15 mins
+    user.resetPasswordExpires = Date.now() + 15 * 60 * 1000;
     await user.save();
 
     return res.json({
@@ -111,7 +115,7 @@ router.post("/forgot-password", async (req, res) => {
   }
 });
 
-/* ------------------- RESET PASSWORD ------------------- */
+/* RESET PASSWORD */
 router.post("/reset-password", async (req, res) => {
   try {
     const { token, newPassword } = req.body || {};
