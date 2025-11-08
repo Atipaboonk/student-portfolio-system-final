@@ -11,46 +11,58 @@ const PortfolioSchema = new mongoose.Schema(
 
     title: { type: String, required: true },
     description: { type: String, default: "" },
-    yearOfProject: { type: Number, required: true },
-    category: { type: String, required: true },
 
-    images: { type: [String], default: [] },
-    coverImageUrl: { type: String },
+    year: {
+      type: Number,
+      required: true,
+      enum: [2020, 2021, 2022, 2023, 2024, 2025],
+    },
+
+    university: { type: String, default: "KMUTT" },
+
+    category: {
+      type: String,
+      required: true,
+      enum: [
+        "AI",
+        "ML",
+        "BI",
+        "QA",
+        "UX/UI",
+        "Database",
+        "Software Engineering",
+        "IOT",
+        "Gaming",
+        "Web Development",
+        "Coding",
+        "Data Science",
+        "Hackathon",
+        "Bigdata",
+        "Data Analytics",
+      ],
+    },
+
+    // ไฟล์ทั้งหมดที่อัปโหลด (1-10)
+    files: [String],
+
+    // ใช้ไฟล์แรกเป็น cover/thumbnail เวลาแสดงหน้ารวม
+    coverFileUrl: String,
 
     visibility: {
       type: String,
-      enum: ["public", "private"],
-      default: "private",
-      index: true,
+      enum: ["PUBLIC", "PRIVATE"],
+      default: "PRIVATE",
     },
 
-    statusV2: {
+    status: {
       type: String,
-      enum: ["Draft", "Pending", "InProcess", "Approved", "Rejected"],
-      default: "Draft",
-      index: true,
+      enum: ["Draft", "Pending", "In Process", "Approve", "Rejected"],
+      default: "Pending",
     },
 
-    reviewComment: { type: String },
-    reviewer: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    revision: { type: Number, default: 0 },
-
-    // optional metadata
-    tags: [{ type: String }],
-    workDate: { type: Date },
-    award: { type: String },
-    awardYear: { type: Number },
+    rejectComment: String,
   },
   { timestamps: true }
 );
 
-PortfolioSchema.index({
-  visibility: 1,
-  statusV2: 1,
-  yearOfProject: 1,
-  category: 1,
-  owner: 1,
-});
-
-const Portfolio = mongoose.model("Portfolio", PortfolioSchema);
-export default Portfolio;
+export default mongoose.model("Portfolio", PortfolioSchema);

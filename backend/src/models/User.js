@@ -1,49 +1,30 @@
 import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema(
+const UserSchema = new mongoose.Schema(
   {
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    displayName: { type: String, required: true },
-
+    passwordHash: { type: String, required: true },
+    displayName: { type: String },
     role: {
       type: String,
-      enum: ["Student", "AdvisorAdmin", "SuperAdmin", "Recruiter"],
-      default: "Student",
+      enum: ["STUDENT", "RECRUITER"],
+      default: "STUDENT",
     },
-
-    status: {
+    accountStatus: {
       type: String,
-      enum: ["pending", "approved", "rejected"],
-      default: "pending",
+      enum: ["Pending", "Fail", "Success"],
+      default: "Pending",
     },
+    // ✅ เพิ่ม idCardUrl สำหรับแนบไฟล์ตอนสมัคร
+    idCardUrl: { type: String },
 
-    studentCardUrl: String,
-    employeeCardUrl: String,
-
-    provider: {
-      type: String,
-      enum: ["local", "google"],
-      default: "local",
-    },
-
-    bio: String,
-    contactEmail: String,
-    phone: String,
-    profileImageUrl: String,
-    socialLinks: {
-      linkedin: String,
-      github: String,
-      facebook: String,
-      website: String,
-    },
+    // ✅ Email verification by SuperAdmin
+    isEmailVerified: { type: Boolean, default: false },
 
     resetPasswordToken: String,
-    resetPasswordExpires: Date,
-
-    avatar: String, // สำหรับ v2 ถ้าใช้
+    resetPasswordExpire: Date,
   },
   { timestamps: true }
 );
 
-export default mongoose.model("User", userSchema);
+export default mongoose.model("User", UserSchema);
